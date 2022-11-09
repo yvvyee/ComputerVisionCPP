@@ -47,6 +47,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LaplacianEdge", "LaplacianE
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TrackbarThresholding", "TrackbarThresholding\TrackbarThresholding.vcxproj", "{55F31F41-79CF-44EA-AF19-C0D0B24716D0}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CannyEdgeDetector", "CannyEdgeDetector\CannyEdgeDetector.vcxproj", "{AF140393-09FE-40E8-A935-BF9F1759FEB4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -231,6 +233,14 @@ Global
 		{55F31F41-79CF-44EA-AF19-C0D0B24716D0}.Release|x64.Build.0 = Release|x64
 		{55F31F41-79CF-44EA-AF19-C0D0B24716D0}.Release|x86.ActiveCfg = Release|Win32
 		{55F31F41-79CF-44EA-AF19-C0D0B24716D0}.Release|x86.Build.0 = Release|Win32
+		{AF140393-09FE-40E8-A935-BF9F1759FEB4}.Debug|x64.ActiveCfg = Debug|x64
+		{AF140393-09FE-40E8-A935-BF9F1759FEB4}.Debug|x64.Build.0 = Debug|x64
+		{AF140393-09FE-40E8-A935-BF9F1759FEB4}.Debug|x86.ActiveCfg = Debug|Win32
+		{AF140393-09FE-40E8-A935-BF9F1759FEB4}.Debug|x86.Build.0 = Debug|Win32
+		{AF140393-09FE-40E8-A935-BF9F1759FEB4}.Release|x64.ActiveCfg = Release|x64
+		{AF140393-09FE-40E8-A935-BF9F1759FEB4}.Release|x64.Build.0 = Release|x64
+		{AF140393-09FE-40E8-A935-BF9F1759FEB4}.Release|x86.ActiveCfg = Release|Win32
+		{AF140393-09FE-40E8-A935-BF9F1759FEB4}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
