@@ -53,6 +53,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HoughTransform", "HoughTran
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LaneDetection", "LaneDetection\LaneDetection.vcxproj", "{6797B840-699C-4883-BA7C-D3471528B262}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "YoloV7", "YoloV7\YoloV7.vcxproj", "{083101B3-54DC-481A-8FB5-9184C99262D2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -261,6 +263,14 @@ Global
 		{6797B840-699C-4883-BA7C-D3471528B262}.Release|x64.Build.0 = Release|x64
 		{6797B840-699C-4883-BA7C-D3471528B262}.Release|x86.ActiveCfg = Release|Win32
 		{6797B840-699C-4883-BA7C-D3471528B262}.Release|x86.Build.0 = Release|Win32
+		{083101B3-54DC-481A-8FB5-9184C99262D2}.Debug|x64.ActiveCfg = Debug|x64
+		{083101B3-54DC-481A-8FB5-9184C99262D2}.Debug|x64.Build.0 = Debug|x64
+		{083101B3-54DC-481A-8FB5-9184C99262D2}.Debug|x86.ActiveCfg = Debug|Win32
+		{083101B3-54DC-481A-8FB5-9184C99262D2}.Debug|x86.Build.0 = Debug|Win32
+		{083101B3-54DC-481A-8FB5-9184C99262D2}.Release|x64.ActiveCfg = Release|x64
+		{083101B3-54DC-481A-8FB5-9184C99262D2}.Release|x64.Build.0 = Release|x64
+		{083101B3-54DC-481A-8FB5-9184C99262D2}.Release|x86.ActiveCfg = Release|Win32
+		{083101B3-54DC-481A-8FB5-9184C99262D2}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
