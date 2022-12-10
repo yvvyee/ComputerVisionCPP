@@ -5,82 +5,74 @@ using namespace std;
 int main(int argc, char* argv[]) {
     Mat src = imread(argv[1], IMREAD_COLOR);
     if (src.empty()) { return -1; }
-    imshow("Source Image", src);
+    imshow("Input Source Image", src);
 
-    // 이후 거리 변환 과정에서 추출을 용이하게 하기 위해 배경을 어둡게 변환
-    Mat mask;
-    inRange(src, Scalar(255, 255, 255), 
-        Scalar(255, 255, 255), mask);
-    src.setTo(Scalar(0, 0, 0), mask);
-    imshow("Black Background Image", src);
+    // 이진 이미지로 변환
+    Mat thresh;
+    cvtColor(src, thresh, COLOR_BGR2GRAY);
+    threshold(thresh, thresh, 0, 255,
+        THRESH_BINARY_INV | THRESH_OTSU);
+    imshow("Binary Image", thresh);
 
-    // 샤프닝 커널
-    Mat kernel = (Mat_<float>(3, 3) <<
-        1, 1, 1,
-        1, -8, 1,
-        1, 1, 1);
-    Mat imgLaplacian;
-    filter2D(src, imgLaplacian, CV_32F, kernel);
-    Mat sharp;
-    src.convertTo(sharp, CV_32F);
-    Mat imgResult = sharp - imgLaplacian;
-    imgResult.convertTo(imgResult, CV_8UC3);
-    imgLaplacian.convertTo(imgLaplacian, CV_8UC3);
+    // 노이즈 제거를 위한 열림 연산
+    Mat opening;
+    Mat kernel = Mat::ones(3, 3, CV_8U);
+    morphologyEx(thresh, opening, MORPH_OPEN, kernel, Point(-1, -1), 2);
+    imshow("De-noised Image", opening);
 
-    imshow("Laplace Filtered Image", imgLaplacian);
-    imshow("New Sharped Image", imgResult);
-
-    // 이진화 이미지 생성
-    Mat bw;
-    cvtColor(imgResult, bw, COLOR_BGR2GRAY);
-    threshold(bw, bw, 40, 255, THRESH_BINARY | THRESH_OTSU);
-    imshow("Binary Image", bw);
-
-    // 거리 변환 알고리즘
+    // 전경 (객체) 과 배경을 구분
+    Mat sure_bg;
+    dilate(opening, sure_bg, kernel, Point(-1, -1), 3);
+    imshow("Background Image", sure_bg);
+    
+    // skeleton 또는 thinning 이미지를 얻기 위한 거리 변환
+    // 전경의 특정 객체의 중심에서 점점 옅어져 가는 형태
+    // 전경 객체를 명확하게 구분할 수 있음
     Mat dist;
-    distanceTransform(bw, dist, DIST_L2, 3);
-
-    // 다음 범위로 거리 변환 이미지를 정규화 = {0.0, 1.0}
+    distanceTransform(opening, dist, DIST_L2, 3);
     normalize(dist, dist, 0, 1.0, NORM_MINMAX);
     imshow("Distance Transform Image", dist);
+    
+    // 이진화를 통해 개별적인 객체들만 남김
+    Mat sure_fg;
+    double max, min;
+    cv::Point min_loc, max_loc;
+    cv::minMaxLoc(dist, &min, &max, &min_loc, &max_loc);
+    threshold(dist, sure_fg, 0.5 * max, 255, THRESH_BINARY);
+    sure_fg.convertTo(sure_fg, CV_8U);
 
-    // 전경 (foreground) 의 객체들을 구분하는 피크 지점을 얻기 위한 이진화
-    threshold(dist, dist, 0.4, 1.0, THRESH_BINARY);
+    imshow("Foreground Image", sure_fg);
 
-    // 피크 이미지 팽창
-    Mat kernel1 = Mat::ones(3, 3, CV_8U);
-    dilate(dist, dist, kernel1);
-    imshow("Dilated Peaks", dist);
+    // 배경 이미지에서 전경 이미지의 영역을 제외
+    Mat unknown;
+    subtract(sure_bg, sure_fg, unknown);
 
-    // findContours() 함수를 위한 8비트 범위로 변환
-    Mat dist_8u;
-    dist.convertTo(dist_8u, CV_8U);
+    imshow("Unknown Image", unknown);
+
+    // 전경 객체에 레이블링 작업
+    Mat markers1;
+    connectedComponents(sure_fg, markers1);
+    markers1 += 1;
+    markers1.setTo(0, unknown);
+
+    // countour 계산을 위해 8비트로 변환
+    Mat markers_8u;
+    markers1.convertTo(markers_8u, CV_8U);
+    
+    imshow("Markers V1", markers_8u);
 
     // 전체 마커의 외곽선 탐색
     vector<vector<Point> > contours;
-    findContours(dist_8u, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
-
-    // 전경 마커 표시
-    Mat markers = Mat::zeros(dist.size(), CV_32S);
-    for (size_t i = 0; i < contours.size(); i++) {
-        drawContours(markers, contours, static_cast<int>(i), 
-            Scalar(static_cast<int>(i) + 1), -1);
-    }
-
-    // 배경 마커 표시
-    circle(markers, Point(5, 5), 3, Scalar(255), -1);
-    Mat markers8u;
-    markers.convertTo(markers8u, CV_8U, 10);
-    imshow("Markers_v1", markers8u);
+    findContours(markers_8u, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
 
     // watershed 알고리즘 수행
-    watershed(imgResult, markers);
-    Mat mark;
-    markers.convertTo(mark, CV_8U);
-    bitwise_not(mark, mark);
+    watershed(src, markers1);
+    Mat markers2;
+    markers1.convertTo(markers2, CV_8U);
+    bitwise_not(markers2, markers2);
 
-    imshow("Markers_v2", mark);
-    
+    imshow("Markers V2", markers2);
+
     // 무작위 색상값 생성
     vector<Vec3b> colors;
     for (size_t i = 0; i < contours.size(); i++)
@@ -92,10 +84,10 @@ int main(int argc, char* argv[]) {
     }
 
     // 색상을 각 영역에 할당
-    Mat dst = Mat::zeros(markers.size(), CV_8UC3);
-    for (int i = 0; i < markers.rows; i++) {
-        for (int j = 0; j < markers.cols; j++) {
-            int index = markers.at<int>(i, j);
+    Mat dst = Mat::zeros(markers1.size(), CV_8UC3);
+    for (int i = 0; i < markers1.rows; i++) {
+        for (int j = 0; j < markers1.cols; j++) {
+            int index = markers1.at<int>(i, j);
             if (index > 0 && index <= static_cast<int>(contours.size())) {
                 dst.at<Vec3b>(i, j) = colors[index - 1];
             }
