@@ -397,7 +397,7 @@ int main(int argc, char** argv) {
 				double yIntercept = y1 - slope * x1;				// y 절편
 				double xIntercept = -yIntercept / slope;			// x 절편 계산, y = mx+b
 
-				// x 절편이 nan 값이 아닐 것, 평균값에 충분히 근접할 것
+				// x 절편이 nan 값이 아닐 것, 중간값에 충분히 근접할 것
 				if (isnan(xIntercept) == 0 && abs(xIntercept - xIntPosMed) < .35 * xIntPosMed) {
 					xIntPosGood.push_back(xIntercept); // add to 'good' vector
 					xIntSum += xIntercept;
@@ -437,7 +437,7 @@ int main(int argc, char** argv) {
 				double yIntercept = y1 - slope * x1;				// y 절편
 				double xIntercept = -yIntercept / slope;			// x 절편 계산, y = mx+b
 
-				// nan 값이 아니고, 평균값에 충분히 근접한지 검사
+				// x 절편이 nan 값이 아닐 것, 중간값에 충분히 근접할 것
 				if (isnan(xIntercept) == 0 && abs(xIntercept - xIntNegMed) < .35 * xIntNegMed) {
 					xIntNegGood.push_back(xIntercept);
 					xIntSumNeg += xIntercept;
@@ -520,6 +520,7 @@ int main(int argc, char** argv) {
 			cv::imshow("Lane Detection", blendedIm);
 			total_count++;
 
+			// 현재 프레임의 직선 정보를 저장
 			previousSlopePositiveLines = slopePositiveLines;
 			previousSlopeNegativeLines = slopeNegativeLines;
 			previousPosSlopeMean = posSlopeMean;
