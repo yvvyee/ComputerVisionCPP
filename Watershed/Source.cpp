@@ -2,15 +2,15 @@
 using namespace cv;
 using namespace std;
 
-int main(int argc, char* argv[])
-{
+int main(int argc, char* argv[]) {
     Mat src = imread(argv[1], IMREAD_COLOR);
-    if (src.empty()) return -1;
+    if (src.empty()) { return -1; }
     imshow("Source Image", src);
-    // 이후 거리 변환 과정에서 추출을 용이하게 
-    // 하기 위해 배경을 어둡게 변환
+
+    // 이후 거리 변환 과정에서 추출을 용이하게 하기 위해 배경을 어둡게 변환
     Mat mask;
-    inRange(src, Scalar(255, 255, 255), Scalar(255, 255, 255), mask);
+    inRange(src, Scalar(255, 255, 255), 
+        Scalar(255, 255, 255), mask);
     src.setTo(Scalar(0, 0, 0), mask);
     imshow("Black Background Image", src);
 
@@ -41,52 +41,47 @@ int main(int argc, char* argv[])
     distanceTransform(bw, dist, DIST_L2, 3);
 
     // 다음 범위로 거리 변환 이미지를 정규화 = {0.0, 1.0}
-    // 이 결과를 기반으로 시각화 및 thresholding
     normalize(dist, dist, 0, 1.0, NORM_MINMAX);
     imshow("Distance Transform Image", dist);
 
-    // Threshold to obtain the peaks
-    // This will be the markers for the foreground objects
+    // 전경 (foreground) 의 객체들을 구분하는 피크 지점을 얻기 위한 이진화
     threshold(dist, dist, 0.4, 1.0, THRESH_BINARY);
 
-    // Dilate a bit the dist image
+    // 피크 이미지 팽창
     Mat kernel1 = Mat::ones(3, 3, CV_8U);
     dilate(dist, dist, kernel1);
-    imshow("Peaks", dist);
+    imshow("Dilated Peaks", dist);
 
-    // Create the CV_8U version of the distance image
-    // It is needed for findContours()
+    // findContours() 함수를 위한 8비트 범위로 변환
     Mat dist_8u;
     dist.convertTo(dist_8u, CV_8U);
 
-    // Find total markers
+    // 전체 마커의 외곽선 탐색
     vector<vector<Point> > contours;
     findContours(dist_8u, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
 
-    // Create the marker image for the watershed algorithm
+    // 전경 마커 표시
     Mat markers = Mat::zeros(dist.size(), CV_32S);
-
-    // Draw the foreground markers
-    for (size_t i = 0; i < contours.size(); i++)
-    {
-        drawContours(markers, contours, static_cast<int>(i), Scalar(static_cast<int>(i) + 1), -1);
+    for (size_t i = 0; i < contours.size(); i++) {
+        drawContours(markers, contours, static_cast<int>(i), 
+            Scalar(static_cast<int>(i) + 1), -1);
     }
 
-    // Draw the background marker
+    // 배경 마커 표시
     circle(markers, Point(5, 5), 3, Scalar(255), -1);
     Mat markers8u;
     markers.convertTo(markers8u, CV_8U, 10);
-    imshow("Markers", markers8u);
+    imshow("Markers_v1", markers8u);
 
-    // Perform the watershed algorithm
+    // watershed 알고리즘 수행
     watershed(imgResult, markers);
     Mat mark;
     markers.convertTo(mark, CV_8U);
     bitwise_not(mark, mark);
 
-    //    imshow("Markers_v2", mark); // uncomment this if you want to see how the mark
-    // image looks like at that point
-    // Generate random colors
+    imshow("Markers_v2", mark);
+    
+    // 무작위 색상값 생성
     vector<Vec3b> colors;
     for (size_t i = 0; i < contours.size(); i++)
     {
@@ -96,24 +91,18 @@ int main(int argc, char* argv[])
         colors.push_back(Vec3b((uchar)b, (uchar)g, (uchar)r));
     }
 
-    // Create the result image
+    // 색상을 각 영역에 할당
     Mat dst = Mat::zeros(markers.size(), CV_8UC3);
-
-    // Fill labeled objects with random colors
-    for (int i = 0; i < markers.rows; i++)
-    {
-        for (int j = 0; j < markers.cols; j++)
-        {
+    for (int i = 0; i < markers.rows; i++) {
+        for (int j = 0; j < markers.cols; j++) {
             int index = markers.at<int>(i, j);
-            if (index > 0 && index <= static_cast<int>(contours.size()))
-            {
+            if (index > 0 && index <= static_cast<int>(contours.size())) {
                 dst.at<Vec3b>(i, j) = colors[index - 1];
             }
         }
     }
 
-    // Visualize the final image
-    imshow("Final Result", dst);
+    imshow("Separated Region Image", dst);
     waitKey();
     return 0;
 }
