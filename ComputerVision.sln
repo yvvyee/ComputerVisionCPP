@@ -55,8 +55,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LaneDetection", "LaneDetect
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LibTorchYoloV5", "LibTorchYoloV5\LibTorchYoloV5.vcxproj", "{C8B20725-6D8B-4361-8041-1612EE8D5CE8}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LibTorchYoloV5Video", "LibTorchYoloV5Video\LibTorchYoloV5Video.vcxproj", "{A5BDB804-37BF-42DE-8CF3-2D8301AADC8B}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -273,14 +271,6 @@ Global
 		{C8B20725-6D8B-4361-8041-1612EE8D5CE8}.Release|x64.Build.0 = Release|x64
 		{C8B20725-6D8B-4361-8041-1612EE8D5CE8}.Release|x86.ActiveCfg = Release|Win32
 		{C8B20725-6D8B-4361-8041-1612EE8D5CE8}.Release|x86.Build.0 = Release|Win32
-		{A5BDB804-37BF-42DE-8CF3-2D8301AADC8B}.Debug|x64.ActiveCfg = Debug|x64
-		{A5BDB804-37BF-42DE-8CF3-2D8301AADC8B}.Debug|x64.Build.0 = Debug|x64
-		{A5BDB804-37BF-42DE-8CF3-2D8301AADC8B}.Debug|x86.ActiveCfg = Debug|Win32
-		{A5BDB804-37BF-42DE-8CF3-2D8301AADC8B}.Debug|x86.Build.0 = Debug|Win32
-		{A5BDB804-37BF-42DE-8CF3-2D8301AADC8B}.Release|x64.ActiveCfg = Release|x64
-		{A5BDB804-37BF-42DE-8CF3-2D8301AADC8B}.Release|x64.Build.0 = Release|x64
-		{A5BDB804-37BF-42DE-8CF3-2D8301AADC8B}.Release|x86.ActiveCfg = Release|Win32
-		{A5BDB804-37BF-42DE-8CF3-2D8301AADC8B}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
